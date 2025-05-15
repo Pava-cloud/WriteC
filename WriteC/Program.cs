@@ -9,7 +9,7 @@ namespace WriteC
         static void Main(string[] args)
         {
             const char driveName = 'H';
-            const string name = "Philipp";
+            const string name = "Name";
 
             subPaths filePath;
             filePath.main = driveName + @":\chat\";
