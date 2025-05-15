@@ -2,9 +2,10 @@
 
 --
 #Commands:
-/uploadfile {FilePath}
-/downloadfile {FileName}; {DownloadPath}
-/clear
+
+- /uploadfile {FilePath}
+- /downloadfile {FileName}; {DownloadPath}
+- /clear
 
 *EXPERIMENTAL*:
-/editline {LineNr} {NewText}
+- /editline {LineNr} {NewText}
