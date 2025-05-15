@@ -6,5 +6,5 @@ Tired of paying for Nitro? You have an extra server you want to use somehow? Wri
 - /downloadfile {FileName}; {DownloadPath}
 - /clear
 
-###EXPERIMENTAL:
+### Experimental Commands
 - /editline {LineNr} {NewText}
