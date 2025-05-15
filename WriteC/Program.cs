@@ -50,7 +50,7 @@ namespace WriteC
                 else if (line.ToLower().IndexOf("/uploadfile") == 0)
                 {
                     File.Move(line.Remove(0, "/uploadfile ".Length), filePath.share + line.Remove(0, line.LastIndexOf(@"\")));
-                    File.AppendAllText(filePath.chat, name + " just uploaded a file: " + line.Remove(0, line.LastIndexOf(@"\") + 1));
+                    File.AppendAllText(filePath.chat,"\n" + name + " just uploaded a file: " + line.Remove(0, line.LastIndexOf(@"\") + 1));
                 }
                 #endregion File Upload
                 #region File Download
