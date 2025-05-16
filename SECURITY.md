@@ -13,4 +13,9 @@ currently being supported with security updates.
 ## Reporting a Vulnerability
 
 If you see someone reusing my code without credit you can report them at my Discord @pavalp1. 
-I will try and take it down.
+I will try and take it down as soon as possible or at least convince them to add proper credits.
+
+## Properly crediting me
+
+If you want to modify/use my code in public I want you to at least link the following:
+the repository in question, my name as well as my Discord tag.
