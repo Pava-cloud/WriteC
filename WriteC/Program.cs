@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.IO;
 using System.Linq;
 namespace WriteC
@@ -8,29 +9,56 @@ namespace WriteC
     {
         static void Main(string[] args)
         {
-            const char driveName = 'H';
-            const string name = "Philipp";
-
+            Console.WriteLine("Please select language | Bitte wählen Sie ihre Sprache:");
+            Console.WriteLine("1.....Deutsch \n2.....English");
+            int lang = int.Parse(Console.ReadLine());
+            string name;
+            try
+            {
+                System.IO.StreamReader nameReader = new StreamReader(@"..\..\name.txt");
+                name = nameReader.ReadLine();
+                nameReader.Close();
+            }
+            catch (Exception)
+            {
+                System.IO.StreamWriter nameWriter = new StreamWriter(@"..\..\name.txt");
+                if (lang == 1)
+                {
+                    Console.WriteLine("Bitte geben Sie ihren Namen ein");
+                }
+                else if (lang == 2)
+                {
+                    Console.WriteLine("Please enter Name");
+                }
+                name = Console.ReadLine();
+                nameWriter.WriteLine(name);
+                nameWriter.Close();
+            }
+            Console.Clear();
             subPaths filePath;
-            filePath.main = driveName + @":\chat\";
-            filePath.chat = filePath.main + @"chat.txt";
-            filePath.share = filePath.main + @"share\";
+            string directory = "H:";
+
             string line, txt;
             #region Input
             while (true)
             {
+                filePath.main = directory + @"\chat\";
+                filePath.chat = filePath.main + @"chat.txt";
+                filePath.share = filePath.main + @"share\";
                 #region Reader/Output
                 try
                 {
-                    System.IO.StreamReader sr = new System.IO.StreamReader(filePath.chat);
-                    txt = sr.ReadToEnd();
-                    sr.Close();
+                    System.IO.StreamReader log = new System.IO.StreamReader(filePath.chat);
+                    txt = log.ReadToEnd();
+                    log.Close();
                     Console.WriteLine(txt);
                 }
                 catch (Exception)
                 { 
                     System.IO.StreamWriter sw1 = new System.IO.StreamWriter(filePath.chat);
+                    sw1.Close();
                     System.IO.StreamWriter sw2 = new System.IO.StreamWriter(filePath.share);
+                    sw2.Close();
                 }
                 #endregion Reader/Output
                 line = Console.ReadLine();
@@ -50,7 +78,7 @@ namespace WriteC
                 else if (line.ToLower().IndexOf("/uploadfile") == 0)
                 {
                     File.Move(line.Remove(0, "/uploadfile ".Length), filePath.share + line.Remove(0, line.LastIndexOf(@"\")));
-                    File.AppendAllText(filePath.chat, name + " just uploaded a file: " + line.Remove(0, line.LastIndexOf(@"\") + 1));
+                    File.AppendAllText(filePath.chat,"\n" + name + " just uploaded a file: " + line.Remove(0, line.LastIndexOf(@"\") + 1));
                 }
                 #endregion File Upload
                 #region File Download
@@ -68,6 +96,20 @@ namespace WriteC
                     clearFile.Close();
                 }
                 #endregion Clear
+                #region Change Server
+                else if (line.ToLower().IndexOf("/changeaddress") == 0)
+                {
+                    string addressLine = line.Remove(0, "/changeAddress".Length + 1);
+                    if (addressLine.Length == addressLine.LastIndexOf(@"\"))
+                    {
+                        directory = addressLine.Remove(addressLine.Length);
+                    }
+                    else
+                    {
+                        directory = addressLine;
+                    }
+                }
+                #endregion Change Server
                 else File.AppendAllText(filePath.chat, "\n" + name + ": " + line);
                 Console.Clear();
             }
