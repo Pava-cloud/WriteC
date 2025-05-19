@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.CodeDom.Compiler;
 using System.IO;
 using System.Linq;
 namespace WriteC
@@ -8,29 +9,66 @@ namespace WriteC
     {
         static void Main(string[] args)
         {
-            const char driveName = 'H';
-            const string name = "Name";
-
+            int lang;
+            try
+            {
+                System.IO.StreamReader languageReader = new StreamReader(@"..\..\lang.txt");
+                lang = int.Parse(languageReader.ReadLine());
+                languageReader.Close();
+            }
+            catch (Exception)
+            {
+                System.IO.StreamWriter languageWriter = new StreamWriter(@"..\..\lang.txt");
+                Console.WriteLine("Please select language | Bitte wählen Sie ihre Sprache:");
+                Console.WriteLine("1.....Deutsch \n2.....English");
+                lang = int.Parse(Console.ReadLine());
+                languageWriter.WriteLine(lang);
+                languageWriter.Close();
+            }
+            string name;
+            try
+            {
+                System.IO.StreamReader nameReader = new StreamReader(@"..\..\name.txt");
+                name = nameReader.ReadLine();
+                nameReader.Close();
+            }
+            catch (Exception)
+            {
+                System.IO.StreamWriter nameWriter = new StreamWriter(@"..\..\name.txt");
+                if (lang == 1)
+                {
+                    Console.WriteLine("Bitte geben Sie ihren Namen ein");
+                }
+                else if (lang == 2)
+                {
+                    Console.WriteLine("Please enter Name");
+                }
+                name = Console.ReadLine();
+                nameWriter.WriteLine(name);
+                nameWriter.Close();
+            }
             subPaths filePath;
-            filePath.main = driveName + @":\chat\";
-            filePath.chat = filePath.main + @"chat.txt";
-            filePath.share = filePath.main + @"share\";
+            string directory = "H:";
             string line, txt;
             #region Input
             while (true)
             {
+                Console.Clear();
+                filePath.main = directory + @"\chat\";
+                filePath.chat = filePath.main + @"chat.txt";
+                filePath.share = filePath.main + @"share\";
                 #region Reader/Output
                 try
                 {
-                    System.IO.StreamReader sr = new System.IO.StreamReader(filePath.chat);
-                    txt = sr.ReadToEnd();
-                    sr.Close();
+                    System.IO.StreamReader log = new System.IO.StreamReader(filePath.chat);
+                    txt = log.ReadToEnd();
+                    log.Close();
                     Console.WriteLine(txt);
                 }
                 catch (Exception)
                 { 
                     System.IO.StreamWriter sw1 = new System.IO.StreamWriter(filePath.chat);
-                    System.IO.StreamWriter sw2 = new System.IO.StreamWriter(filePath.share);
+                    sw1.Close();
                 }
                 #endregion Reader/Output
                 line = Console.ReadLine();
@@ -39,10 +77,13 @@ namespace WriteC
                 {
                     int lineNumber = int.Parse(line.Remove(0, "/editline ".Length).Remove(1));
                     var lines = File.ReadAllLines(filePath.chat).ToList();
-                    if (lineNumber < lines.Count)
+                    if (lines[lineNumber].IndexOf(name) == 0)
                     {
-                        lines[lineNumber] = name + ": " + line.Remove(0, line.IndexOf(' ', line.IndexOf(' ') + 1) + 1);
-                        File.WriteAllLines(filePath.chat, lines);
+                        if (lineNumber < lines.Count)
+                        {
+                            lines[lineNumber] = name + ": " + line.Remove(0, line.IndexOf(' ', line.IndexOf(' ') + 1) + 1);
+                            File.WriteAllLines(filePath.chat, lines);
+                        }
                     }
                 }
                 #endregion Edit Line
@@ -68,8 +109,55 @@ namespace WriteC
                     clearFile.Close();
                 }
                 #endregion Clear
+                #region Change Server
+                else if (line.ToLower().IndexOf("/changeaddress") == 0 || line.ToLower().IndexOf("/changedir") == 0)
+                {
+                    string addressLine = line.Remove(0, line.IndexOf(" "));
+                    if (addressLine.Length == addressLine.LastIndexOf(@"\"))
+                    {
+                        directory = addressLine.Remove(addressLine.Length);
+                    }
+                    else
+                    {
+                        directory = addressLine;
+                    }
+                }
+                #endregion Change Server
+                #region Help
+                else if (line.ToLower().IndexOf("/help") == 0)
+                {
+                    int padSpace = 50;
+                    switch (lang)
+                    {
+                        case 1:
+                            {
+                                Console.ForegroundColor = ConsoleColor.Yellow;
+                                Console.WriteLine("Liste aller Befehle:");
+                                Console.ForegroundColor= ConsoleColor.White;
+                                Console.WriteLine("/uploadfile {FilePath}".PadRight(padSpace - 2) + "Lade eine Datei auf den Server" +
+                                    "\r\n/downloadfile {FileName}; {DownloadPath}".PadRight(padSpace) + "Lade eine Datei vom Server herunter" +
+                                    "\r\n/changeaddress {NeuerPfad}".PadRight(padSpace) + "Ändere den aktuellen Server" +
+                                    "\r\n/clear".PadRight(padSpace) + "Leere den kompletten Chatverlauf" +
+                                    "\r\n/help".PadRight(padSpace) + "Zeige diese Liste aller Befehle");
+                                break;
+                            }
+                        case 2:
+                            {
+                                Console.ForegroundColor = ConsoleColor.Yellow;
+                                Console.WriteLine("List of all Commands:");
+                                Console.ForegroundColor = ConsoleColor.White;
+                                Console.WriteLine("/uploadfile {FilePath}".PadRight(padSpace - 2) + "upload a file to the server" +
+                                    "\r\n/downloadfile {FileName}; {DownloadPath}".PadRight(padSpace) + "download a file from the server" +
+                                    "\r\n/changeaddress {NewPath}".PadRight(padSpace) + "change the current server" + 
+                                    "\r\n/clear".PadRight(padSpace) + "clear the chatlog" +
+                                    "\r\n/help".PadRight(padSpace) + "show this list of all commands");
+                                break;
+                            }
+                    }
+                    Console.ReadKey();
+                }
+                #endregion Help
                 else File.AppendAllText(filePath.chat, "\n" + name + ": " + line);
-                Console.Clear();
             }
             #endregion Input
         }
