@@ -110,9 +110,9 @@ namespace WriteC
                 }
                 #endregion Clear
                 #region Change Server
-                else if (line.ToLower().IndexOf("/changeaddress") == 0)
+                else if (line.ToLower().IndexOf("/changeaddress") == 0 || line.ToLower().IndexOf("/changedir") == 0)
                 {
-                    string addressLine = line.Remove(0, "/changeAddress".Length + 1);
+                    string addressLine = line.Remove(0, line.IndexOf(" "));
                     if (addressLine.Length == addressLine.LastIndexOf(@"\"))
                     {
                         directory = addressLine.Remove(addressLine.Length);
