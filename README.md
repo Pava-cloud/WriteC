@@ -4,7 +4,9 @@ Tired of paying for Nitro? You have an extra server you want to use somehow? Wri
 ## Commands
 - /uploadfile {FilePath}
 - /downloadfile {FileName}; {DownloadPath}
+- /changeaddress[/changedir] {NewPath}
 - /clear
+- /help
 
 ### Experimental Commands
 - /editline {LineNr} {NewText}
