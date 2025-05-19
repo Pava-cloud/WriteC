@@ -47,13 +47,13 @@ namespace WriteC
                 nameWriter.WriteLine(name);
                 nameWriter.Close();
             }
-            Console.Clear();
             subPaths filePath;
             string directory = "H:";
             string line, txt;
             #region Input
             while (true)
             {
+                Console.Clear();
                 filePath.main = directory + @"\chat\";
                 filePath.chat = filePath.main + @"chat.txt";
                 filePath.share = filePath.main + @"share\";
@@ -158,7 +158,6 @@ namespace WriteC
                 }
                 #endregion Help
                 else File.AppendAllText(filePath.chat, "\n" + name + ": " + line);
-                Console.Clear();
             }
             #endregion Input
         }
