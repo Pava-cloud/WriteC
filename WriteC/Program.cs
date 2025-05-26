@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using static System.Console;
 namespace WriteC
 {
     struct subPaths {public string chat, share, main; }
@@ -8,10 +9,34 @@ namespace WriteC
     {
         static void Main(string[] args)
         {
+            const int serverOS = 0; // 0 = Windows | 1 = Linux | 2 = Mac
+            
             int lang;
             bool darkModeToggle = true, newUser = false;
+            string line, txt, name, directory = "";
             subPaths filePath;
-            string line, txt, name, directory = "H:";
+            if (serverOS == 0)
+            {
+               directory = "H:";
+                filePath.main = directory + @"\chat\";
+                filePath.chat = filePath.main + @"chat.txt";
+                filePath.share = filePath.main + @"share\";
+            }
+            else if (serverOS == 1)
+            {
+                directory = "/usr/home/$(whoami)";
+                filePath.main = directory + @"/chat/";
+                filePath.chat = filePath.main + @"chat.txt";
+                filePath.share = filePath.main + @"share/";
+            }
+            else if (serverOS == 2)
+            {
+                directory = "~";
+                filePath.main = directory + @"/chat/";
+                filePath.chat = filePath.main + @"chat.txt";
+                filePath.share = filePath.main + @"share/";
+            }
+            #region Startup
             try
             {
                 System.IO.StreamReader languageReader = new StreamReader(@"..\..\lang.txt");
@@ -35,7 +60,6 @@ namespace WriteC
             }
             catch (Exception)
             {
-                newUser = true;
                 System.IO.StreamWriter nameWriter = new StreamWriter(@"..\..\name.txt");
                 if (lang == 1)
                 {
@@ -48,13 +72,20 @@ namespace WriteC
                 name = Console.ReadLine();
                 nameWriter.WriteLine(name);
                 nameWriter.Close();
+                newUser = true;
             }
+            if (newUser)
+            {
+                File.AppendAllText(filePath.chat, "\n" + name + " joined the chat.");
+                newUser = false;
+            }
+            #endregion Startup
             #region Input
             #region Welcome Message
             if (lang == 1)
             {
-                Console.WriteLine("Willkommen zu WriteC");
-                Console.WriteLine("Geben Sie /help fär eine liste aller gültigen Befehle ein:");
+                WriteLine("Willkommen zu WriteC");
+                WriteLine("Geben Sie /help fär eine liste aller gültigen Befehle ein:");
             }
             else if (lang == 2)
             {
@@ -62,17 +93,30 @@ namespace WriteC
                 Console.WriteLine("Enter /help to show a list of all commands");
             }
             #endregion Welcome Message
-            Console.ReadKey(true);
+            ReadKey(true);
             while (true)
             {
-                Console.Clear();
-                filePath.main = directory + @"\chat\";
-                filePath.chat = filePath.main + @"chat.txt";
-                filePath.share = filePath.main + @"share\";
-                if (newUser)
+                Clear();
+                if (serverOS == 0)
                 {
-                    File.AppendAllText(filePath.chat, "\n" + name + " joined the chat.");
-                    newUser = false;
+                    directory = "H:";
+                    filePath.main = directory + @"\chat\";
+                    filePath.chat = filePath.main + @"chat.txt";
+                    filePath.share = filePath.main + @"share\";
+                }
+                else if (serverOS == 1)
+                {
+                    directory = "/usr/home/$(whoami)";
+                    filePath.main = directory + @"/chat/";
+                    filePath.chat = filePath.main + @"chat.txt";
+                    filePath.share = filePath.main + @"share/";
+                }
+                else if (serverOS == 2)
+                {
+                    directory = "/home/" + Environment.UserName;
+                    filePath.main = directory + @"/chat/";
+                    filePath.chat = filePath.main + @"chat.txt";
+                    filePath.share = filePath.main + @"share/";
                 }
                 #region Reader/Output
                 try
@@ -88,7 +132,7 @@ namespace WriteC
                     sw1.Close();
                 }
                 #endregion Reader/Output
-                line = Console.ReadLine();
+                line = ReadLine();
                 #region Edit Line
                 if (line.ToLower().IndexOf("/editline") == 0)
                 {
@@ -143,15 +187,15 @@ namespace WriteC
                 #region Help
                 else if (line.ToLower().IndexOf("/help") == 0)
                 {
-                    int padSpace = 50;
+                    const int padSpace = 50;
                     switch (lang)
                     {
                         case 1:
                             {
-                                Console.ForegroundColor = ConsoleColor.Yellow;
-                                Console.WriteLine("Liste aller Befehle:");
-                                Console.ForegroundColor= ConsoleColor.White;
-                                Console.WriteLine("/uploadfile {FilePath}".PadRight(padSpace - 2) + "Lade eine Datei auf den Server" +
+                                ForegroundColor = ConsoleColor.Yellow;
+                                WriteLine("Liste aller Befehle:");
+                                ForegroundColor = ConsoleColor.White;
+                                WriteLine("/uploadfile {FilePath}".PadRight(padSpace - 2) + "Lade eine Datei auf den Server" +
                                     "\r\n/downloadfile {FileName}; {DownloadPath}".PadRight(padSpace) + "Lade eine Datei vom Server herunter" +
                                     "\r\n/changeaddress {NeuerPfad}".PadRight(padSpace) + "Ändere den aktuellen Server" +
                                     "\r\n/foreground-color {Farbe}".PadRight(padSpace) + "Ändere die Textfarbe" +
@@ -163,10 +207,10 @@ namespace WriteC
                             }
                         case 2:
                             {
-                                Console.ForegroundColor = ConsoleColor.Yellow;
-                                Console.WriteLine("List of all Commands:");
-                                Console.ForegroundColor = ConsoleColor.White;
-                                Console.WriteLine("/uploadfile {FilePath}".PadRight(padSpace - 2) + "upload a file to the server" +
+                                ForegroundColor = ConsoleColor.Yellow;
+                                WriteLine("List of all Commands:");
+                                ForegroundColor = ConsoleColor.White;
+                                WriteLine("/uploadfile {FilePath}".PadRight(padSpace - 2) + "upload a file to the server" +
                                     "\r\n/downloadfile {FileName}; {DownloadPath}".PadRight(padSpace) + "download a file from the server" +
                                     "\r\n/changeaddress {NewPath}".PadRight(padSpace) + "change the current server" +
                                     "\r\n/foreground-color {Color}".PadRight(padSpace) + "change the text color" +
