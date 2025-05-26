@@ -9,7 +9,7 @@ namespace WriteC
         static void Main(string[] args)
         {
             int lang;
-            bool darkModeToggle = true, newUser = true;
+            bool darkModeToggle = true, newUser = false;
             subPaths filePath;
             string line, txt, name, directory = "H:";
             try
@@ -35,6 +35,7 @@ namespace WriteC
             }
             catch (Exception)
             {
+                newUser = true;
                 System.IO.StreamWriter nameWriter = new StreamWriter(@"..\..\name.txt");
                 if (lang == 1)
                 {
