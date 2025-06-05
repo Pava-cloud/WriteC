@@ -1,10 +1,12 @@
 # WriteC
+Tired of paying for Nitro? You have an extra server you want to use somehow? WriteC is a new Chat platform and file server in one! Not only that. It is written as a stylish ConsoleApp!
 
---
-#Commands:
-/uploadfile {FilePath}
-/downloadfile {FileName}; {DownloadPath}
-/clear
+## Commands
+- /uploadfile {FilePath}
+- /downloadfile {FileName}; {DownloadPath}
+- /changeaddress[/changedir] {NewPath}
+- /clear
+- /help
 
-*EXPERIMENTAL*:
-/editline {LineNr} {NewText}
+### Experimental Commands
+- /editline {LineNr} {NewText}
