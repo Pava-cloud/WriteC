@@ -1,10 +1,13 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Net.Configuration;
 using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Security.Cryptography;
 using static System.Console;
+using static System.ConsoleColor;
+
 namespace WriteC
 {
     struct subPaths {public string chat, share, main; }
@@ -13,7 +16,7 @@ namespace WriteC
         static void Main(string[] args)
         {
             const int serverOS = 0; // 0 = Windows | 1 = Linux | 2 = Mac
-            const string key = "jgldsöafjasld";
+            const int key = 12;
 
 
 
@@ -131,14 +134,13 @@ namespace WriteC
                     {
                             while ((txt = log.ReadLine()) != null)
                             {
-                                WriteLine(txt);
+                                WriteLine(Decoding(txt, key));
                             }
                         txt = log.ReadToEnd();
                     }
                 }
                 catch (Exception)
                 { 
-                    
                     System.IO.StreamWriter sw1 = new System.IO.StreamWriter(filePath.chat);
                     sw1.Close();
                 }
@@ -203,9 +205,9 @@ namespace WriteC
                     {
                         case 1:
                             {
-                                ForegroundColor = ConsoleColor.Yellow;
+                                ForegroundColor = Yellow;
                                 WriteLine("Liste aller Befehle:");
-                                ForegroundColor = ConsoleColor.White;
+                                ForegroundColor = White;
                                 WriteLine("/uploadfile {FilePath}".PadRight(padSpace - 2) + "Lade eine Datei auf den Server" +
                                     "\r\n/downloadfile {FileName}; {DownloadPath}".PadRight(padSpace) + "Lade eine Datei vom Server herunter" +
                                     "\r\n/changeaddress {NeuerPfad}".PadRight(padSpace) + "Ändere den aktuellen Server" +
@@ -213,14 +215,15 @@ namespace WriteC
                                     "\r\n/background-color {Farbe}".PadRight(padSpace) + "Ändere die Hintergrundfarbe" +
                                     "\r\n/darkmode".PadRight(padSpace) + "Wechsle in den Darkmode" +
                                     "\r\n/clear".PadRight(padSpace) + "Leere den kompletten Chatverlauf" +
-                                    "\r\n/help".PadRight(padSpace) + "Zeige diese Liste aller Befehle");
+                                    "\r\n/help".PadRight(padSpace) + "Zeige diese Liste aller Befehle"
+                                    );
                                 break;
                             }
                         case 2:
                             {
-                                ForegroundColor = ConsoleColor.Yellow;
+                                ForegroundColor = Yellow;
                                 WriteLine("List of all Commands:");
-                                ForegroundColor = ConsoleColor.White;
+                                ForegroundColor = White;
                                 WriteLine("/uploadfile {FilePath}".PadRight(padSpace - 2) + "upload a file to the server" +
                                     "\r\n/downloadfile {FileName}; {DownloadPath}".PadRight(padSpace) + "download a file from the server" +
                                     "\r\n/changeaddress {NewPath}".PadRight(padSpace) + "change the current server" +
@@ -228,11 +231,12 @@ namespace WriteC
                                     "\r\n/background-color {Color}".PadRight(padSpace) + "change the background color" +
                                     "\r\n/darkmode".PadRight(padSpace) + "change to darkmode" +
                                     "\r\n/clear".PadRight(padSpace) + "clear the chatlog" +
-                                    "\r\n/help".PadRight(padSpace) + "show this list of all commands");
+                                    "\r\n/help".PadRight(padSpace) + "show this list of all commands"
+                                    );
                                 break;
                             }
                     }
-                    Console.ReadKey();
+                    ReadKey();
                 }
                 #endregion Help
                 #region Foreground Color
@@ -242,12 +246,12 @@ namespace WriteC
                     ConsoleColor color;
                     if (Enum.TryParse(colorName, true, out color))
                     {
-                        Console.ForegroundColor = color;
-                        Console.WriteLine("This text is red!");
+                        ForegroundColor = color;
+                        WriteLine("This text is red!");
                     }
                     else
                     {
-                        Console.WriteLine("Invalid color name.");
+                        WriteLine("Invalid color name.");
                     }
                 }
                 #endregion Foreground Color
@@ -272,13 +276,13 @@ namespace WriteC
                 {
                     if (darkModeToggle)
                     {
-                        Console.ForegroundColor = ConsoleColor.Black;
-                        Console.BackgroundColor = ConsoleColor.White;
+                        ForegroundColor = ConsoleColor.Black;
+                        BackgroundColor = ConsoleColor.White;
                     }
                     else
                     {
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.BackgroundColor = ConsoleColor.Black;
+                        ForegroundColor = ConsoleColor.White;
+                        BackgroundColor = ConsoleColor.Black;
                     }
                     darkModeToggle = !darkModeToggle;
                 }
@@ -288,12 +292,38 @@ namespace WriteC
                 {
                     line = "\n" + name + ": " + line;
                     char[] currentChar = new char[line.Length];
-                    for (int i = 0; i < line.Length; i++)
-                    File.AppendAllText(filePath.chat, line);
+                    File.AppendAllText(filePath.chat, Encoding(line, key));
                 }
                 #endregion Write Line
             }
             #endregion Input
+        }
+        public static string Encoding(string message, int key)
+        {
+            #region Encoding
+            string newMessage = "";
+            WriteLine(message);
+            for (int i = 0; i < message.Length; i++)
+            {
+                char c = message[i];
+                int code = (int)char.Parse(message.Substring(i, 1));
+                newMessage += ((char)(code + key)).ToString();
+            }
+            return newMessage;
+            #endregion Encoding
+        }
+        public static string Decoding(string message, int key)
+        {
+            string newMessage = "";
+            #region Decoding
+            for (int i = 0; i < message.Length; i++)
+            {
+                char c = message[i];
+                int code = (int)char.Parse(message.Substring(i, 1));
+                newMessage += ((char)(code - key)).ToString();
+            }
+            #endregion Decoding
+            return newMessage;
         }
     }
 }
