@@ -4,9 +4,9 @@
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 1.0     | :white_check_mark: |
-| 1.1     | :white_check_mark: |
-
+| 1.0     | :X: |
+| 1.1     | :X: |
+| 1.2     | :white_check_mark: |
 ## Reporting a Vulnerability
 
 If you see someone reusing my code without credit you can report them at my Discord @pavalp1. 
