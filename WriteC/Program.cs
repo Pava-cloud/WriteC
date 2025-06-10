@@ -1,6 +1,9 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.Remoting.Messaging;
+using System.Security.Cryptography;
 using static System.Console;
 namespace WriteC
 {
@@ -10,16 +13,19 @@ namespace WriteC
         static void Main(string[] args)
         {
             const int serverOS = 0; // 0 = Windows | 1 = Linux | 2 = Mac
-            
+            const string key = "jgldsöafjasld";
+
+
+
             int lang;
             bool darkModeToggle = true, newUser = false;
             string line, txt, name, directory = "";
             subPaths filePath;
             if (serverOS == 0)
             {
-               directory = "H:";
+                directory = "H:";
                 filePath.main = directory + @"\chat\";
-                filePath.chat = filePath.main + @"chat.txt";
+                filePath.chat = filePath.main + @"chat.md";
                 filePath.share = filePath.main + @"share\";
             }
             else if (serverOS == 1)
@@ -96,13 +102,13 @@ namespace WriteC
             ReadKey(true);
             while (true)
             {
-                Console.Clear();
+                Clear();
                 if (serverOS == 0)
                 {
                     directory = "H:";
-                filePath.main = directory + @"\chat\";
-                filePath.chat = filePath.main + @"chat.txt";
-                filePath.share = filePath.main + @"share\";
+                    filePath.main = directory + @"\chat\";
+                    filePath.chat = filePath.main + @"chat.txt";
+                    filePath.share = filePath.main + @"share\";
                 }
                 else if (serverOS == 1)
                 {
@@ -121,13 +127,18 @@ namespace WriteC
                 #region Reader/Output
                 try
                 {
-                    System.IO.StreamReader log = new System.IO.StreamReader(filePath.chat);
-                    txt = log.ReadToEnd();
-                    log.Close();
-                    Console.WriteLine(txt);
+                    using (StreamReader log = new StreamReader(filePath.chat))
+                    {
+                            while ((txt = log.ReadLine()) != null)
+                            {
+                                WriteLine(txt);
+                            }
+                        txt = log.ReadToEnd();
+                    }
                 }
                 catch (Exception)
                 { 
+                    
                     System.IO.StreamWriter sw1 = new System.IO.StreamWriter(filePath.chat);
                     sw1.Close();
                 }
@@ -152,7 +163,7 @@ namespace WriteC
                 else if (line.ToLower().IndexOf("/uploadfile") == 0)
                 {
                     File.Move(line.Remove(0, "/uploadfile ".Length), filePath.share + line.Remove(0, line.LastIndexOf(@"\")));
-                    File.AppendAllText(filePath.chat,"\n" + name + " just uploaded a file: " + line.Remove(0, line.LastIndexOf(@"\") + 1));
+                    File.AppendAllText(filePath.chat, "\n" + name + " just uploaded a file: " + line.Remove(0, line.LastIndexOf(@"\") + 1));
                 }
                 #endregion File Upload
                 #region File Download
@@ -212,7 +223,7 @@ namespace WriteC
                                 ForegroundColor = ConsoleColor.White;
                                 WriteLine("/uploadfile {FilePath}".PadRight(padSpace - 2) + "upload a file to the server" +
                                     "\r\n/downloadfile {FileName}; {DownloadPath}".PadRight(padSpace) + "download a file from the server" +
-                                    "\r\n/changeaddress {NewPath}".PadRight(padSpace) + "change the current server" + 
+                                    "\r\n/changeaddress {NewPath}".PadRight(padSpace) + "change the current server" +
                                     "\r\n/foreground-color {Color}".PadRight(padSpace) + "change the text color" +
                                     "\r\n/background-color {Color}".PadRight(padSpace) + "change the background color" +
                                     "\r\n/darkmode".PadRight(padSpace) + "change to darkmode" +
@@ -257,11 +268,11 @@ namespace WriteC
                 }
                 #endregion Foreground Color
                 #region Darkmode
-                else if(line.IndexOf("/darkmode") == 0)
+                else if (line.IndexOf("/darkmode") == 0)
                 {
-                    if(darkModeToggle)
+                    if (darkModeToggle)
                     {
-                        Console.ForegroundColor= ConsoleColor.Black;
+                        Console.ForegroundColor = ConsoleColor.Black;
                         Console.BackgroundColor = ConsoleColor.White;
                     }
                     else
@@ -272,7 +283,15 @@ namespace WriteC
                     darkModeToggle = !darkModeToggle;
                 }
                 #endregion Darkmode
-                else File.AppendAllText(filePath.chat, "\n" + name + ": " + line);
+                #region Write Line
+                else
+                {
+                    line = "\n" + name + ": " + line;
+                    char[] currentChar = new char[line.Length];
+                    for (int i = 0; i < line.Length; i++)
+                    File.AppendAllText(filePath.chat, line);
+                }
+                #endregion Write Line
             }
             #endregion Input
         }
