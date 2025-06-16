@@ -10,3 +10,5 @@ Tired of paying for Nitro? You have an extra server you want to use somehow? Wri
 
 ### Experimental Commands
 - /editline {LineNr} {NewText}
+## Note
+If you want to always have the newest experimental version you have to compile it from source.
