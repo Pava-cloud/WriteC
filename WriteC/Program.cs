@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using static System.Console;
 using static System.ConsoleColor;
-
 namespace WriteC
 {
     struct subPaths {public string chat, share, main; }
@@ -13,7 +12,6 @@ namespace WriteC
         {
             const int serverOS = 0; // 0 = Windows | 1 = Linux | 2 = Mac
             const int key = 12;
-
             int lang;
             bool darkModeToggle = true, newUser = false;
             string line, txt, name, directory = "";
@@ -28,6 +26,7 @@ namespace WriteC
             catch (Exception)
             {
                 StreamWriter pathwriter = new StreamWriter("path.txt");
+#pragma warning disable CS0162 //Disable Warning message
                 switch (serverOS)
                 {
                     case 0: pathwriter.WriteLine("C:");
@@ -37,42 +36,43 @@ namespace WriteC
                     case 2: pathwriter.WriteLine("~");
                         break;
                 }
+                pathwriter.Close();
             }
             (directory, filePath) = Directory(directory, serverOS);
             #region Startup
             try
             {
-                System.IO.StreamReader languageReader = new StreamReader(@"..\..\lang.txt");
+                StreamReader languageReader = new StreamReader(@"..\..\lang.txt");
                 lang = int.Parse(languageReader.ReadLine());
                 languageReader.Close();
             }
             catch (Exception)
             {
-                System.IO.StreamWriter languageWriter = new StreamWriter(@"..\..\lang.txt");
-                Console.WriteLine("Please select language | Bitte wählen Sie ihre Sprache:");
-                Console.WriteLine("1.....Deutsch \n2.....English");
-                lang = int.Parse(Console.ReadLine());
+                StreamWriter languageWriter = new StreamWriter(@"..\..\lang.txt");
+                WriteLine("Please select language | Bitte wählen Sie ihre Sprache:");
+                WriteLine("1.....Deutsch \n2.....English");
+                lang = int.Parse(ReadLine());
                 languageWriter.WriteLine(lang);
                 languageWriter.Close();
             }
             try
             {
-                System.IO.StreamReader nameReader = new StreamReader(@"..\..\name.txt");
+                StreamReader nameReader = new StreamReader(@"..\..\name.txt");
                 name = nameReader.ReadLine();
                 nameReader.Close();
             }
             catch (Exception)
             {
-                System.IO.StreamWriter nameWriter = new StreamWriter(@"..\..\name.txt");
+                StreamWriter nameWriter = new StreamWriter(@"..\..\name.txt");
                 if (lang == 1)
                 {
-                    Console.WriteLine("Bitte geben Sie ihren Namen ein");
+                    WriteLine("Bitte geben Sie ihren Namen ein");
                 }
                 else if (lang == 2)
                 {
-                    Console.WriteLine("Please enter Name");
+                    WriteLine("Please enter Name");
                 }
-                name = Console.ReadLine();
+                name = ReadLine();
                 nameWriter.WriteLine(name);
                 nameWriter.Close();
                 newUser = true;
@@ -92,8 +92,8 @@ namespace WriteC
             }
             else if (lang == 2)
             {
-                Console.WriteLine("Welcome to WriteC");
-                Console.WriteLine("Enter /help to show a list of all commands");
+                WriteLine("Welcome to WriteC");
+                WriteLine("Enter /help to show a list of all commands");
             }
             #endregion Welcome Message
             ReadKey(true);
@@ -106,16 +106,16 @@ namespace WriteC
                 {
                     using (StreamReader log = new StreamReader(filePath.chat))
                     {
-                            while ((txt = log.ReadLine()) != null)
-                            {
-                                WriteLine(Decoding(txt, key));
-                            }
+                        while ((txt = log.ReadLine()) != null)
+                        {
+                            WriteLine(Decoding(txt, key));
+                        }
                         txt = log.ReadToEnd();
                     }
                 }
                 catch (Exception)
                 { 
-                    System.IO.StreamWriter sw1 = new System.IO.StreamWriter(filePath.chat);
+                    StreamWriter sw1 = new StreamWriter(filePath.chat);
                     sw1.Close();
                 }
                 #endregion Reader/Output
@@ -153,7 +153,7 @@ namespace WriteC
                 #region Clear
                 else if (line.ToLower().IndexOf("/clear") == 0)
                 {
-                    System.IO.StreamWriter clearFile = new System.IO.StreamWriter(filePath.chat);
+                    StreamWriter clearFile = new StreamWriter(filePath.chat);
                     clearFile.Close();
                 }
                 #endregion Clear
@@ -236,12 +236,12 @@ namespace WriteC
                     ConsoleColor color;
                     if (Enum.TryParse(colorName, true, out color))
                     {
-                        Console.BackgroundColor = color;
-                        Console.WriteLine("This text is red!");
+                        BackgroundColor = color;
+                        WriteLine("This text is red!");
                     }
                     else
                     {
-                        Console.WriteLine("Invalid color name.");
+                        WriteLine("Invalid color name.");
                     }
                 }
                 #endregion Foreground Color
@@ -284,6 +284,7 @@ namespace WriteC
             }
             return newMessage;
         }
+
         public static string Decoding(string message, int key)
         {
             string newMessage = "";
