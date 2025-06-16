@@ -1,10 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Net.Configuration;
-using System.Reflection;
-using System.Runtime.Remoting.Messaging;
-using System.Security.Cryptography;
 using static System.Console;
 using static System.ConsoleColor;
 
@@ -18,33 +14,31 @@ namespace WriteC
             const int serverOS = 0; // 0 = Windows | 1 = Linux | 2 = Mac
             const int key = 12;
 
-
-
             int lang;
             bool darkModeToggle = true, newUser = false;
             string line, txt, name, directory = "";
             subPaths filePath;
-            if (serverOS == 0)
+            try
             {
-                directory = "H:";
-                filePath.main = directory + @"\chat\";
-                filePath.chat = filePath.main + @"chat.md";
-                filePath.share = filePath.main + @"share\";
+                using (StreamReader pathreader = new StreamReader("path.txt"))
+                {
+                    directory = pathreader.ReadLine();
+                }
             }
-            else if (serverOS == 1)
+            catch (Exception)
             {
-                directory = "/usr/home/$(whoami)";
-                filePath.main = directory + @"/chat/";
-                filePath.chat = filePath.main + @"chat.txt";
-                filePath.share = filePath.main + @"share/";
+                StreamWriter pathwriter = new StreamWriter("path.txt");
+                switch (serverOS)
+                {
+                    case 0: pathwriter.WriteLine("C:");
+                        break;
+                    case 1: pathwriter.WriteLine("/usr/home/$(whoami)");
+                        break;
+                    case 2: pathwriter.WriteLine("~");
+                        break;
+                }
             }
-            else if (serverOS == 2)
-            {
-                directory = "~";
-                filePath.main = directory + @"/chat/";
-                filePath.chat = filePath.main + @"chat.txt";
-                filePath.share = filePath.main + @"share/";
-            }
+            (directory, filePath) = Directory(directory, serverOS);
             #region Startup
             try
             {
@@ -105,28 +99,8 @@ namespace WriteC
             ReadKey(true);
             while (true)
             {
+                (directory, filePath) = Directory(directory, serverOS);
                 Clear();
-                if (serverOS == 0)
-                {
-                    directory = "H:";
-                    filePath.main = directory + @"\chat\";
-                    filePath.chat = filePath.main + @"chat.txt";
-                    filePath.share = filePath.main + @"share\";
-                }
-                else if (serverOS == 1)
-                {
-                    directory = "/usr/home/$(whoami)";
-                    filePath.main = directory + @"/chat/";
-                    filePath.chat = filePath.main + @"chat.txt";
-                    filePath.share = filePath.main + @"share/";
-                }
-                else if (serverOS == 2)
-                {
-                    directory = "/home/" + Environment.UserName;
-                    filePath.main = directory + @"/chat/";
-                    filePath.chat = filePath.main + @"chat.txt";
-                    filePath.share = filePath.main + @"share/";
-                }
                 #region Reader/Output
                 try
                 {
@@ -300,30 +274,49 @@ namespace WriteC
         }
         public static string Encoding(string message, int key)
         {
-            #region Encoding
             string newMessage = "";
             WriteLine(message);
             for (int i = 0; i < message.Length; i++)
             {
                 char c = message[i];
-                int code = (int)char.Parse(message.Substring(i, 1));
+                int code = char.Parse(message.Substring(i, 1));
                 newMessage += ((char)(code + key)).ToString();
             }
             return newMessage;
-            #endregion Encoding
         }
         public static string Decoding(string message, int key)
         {
             string newMessage = "";
-            #region Decoding
             for (int i = 0; i < message.Length; i++)
             {
                 char c = message[i];
-                int code = (int)char.Parse(message.Substring(i, 1));
+                int code = char.Parse(message.Substring(i, 1));
                 newMessage += ((char)(code - key)).ToString();
             }
-            #endregion Decoding
             return newMessage;
+        }
+        public static (string, subPaths) Directory(string directory, int serverOS)
+        {
+            subPaths filePath;
+            switch (serverOS)
+            {
+                default:
+                    filePath.main = directory + @"\chat\";
+                    filePath.chat = filePath.main + @"chat.txt";
+                    filePath.share = filePath.main + @"share\";
+                    break;
+                case 1:
+                    filePath.main = directory + @"/chat/";
+                    filePath.chat = filePath.main + @"chat.txt";
+                    filePath.share = filePath.main + @"share/";
+                    break;
+                case 2:
+                    filePath.main = directory + @"/chat/";
+                    filePath.chat = filePath.main + @"chat.txt";
+                    filePath.share = filePath.main + @"share/";
+                    break;
+            }
+            return (directory, filePath);
         }
     }
 }
