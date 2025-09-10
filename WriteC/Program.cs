@@ -11,10 +11,10 @@ namespace WriteC
         static void Main(string[] args)
         {
             const int serverOS = 0; // 0 = Windows | 1 = Linux | 2 = Mac
-            const int key = 12;
+            int key = 12;
             int lang;
             bool darkModeToggle = true, newUser = false;
-            string line, txt, name, directory = "";
+            string line, txt, name, directory = @"";
             subPaths filePath;
             try
             {
@@ -29,7 +29,7 @@ namespace WriteC
 #pragma warning disable CS0162 //Disable Warning message
                 switch (serverOS)
                 {
-                    case 0: pathwriter.WriteLine("C:");
+                    case 0: pathwriter.WriteLine(@"C:\Users\pava\Desktop");
                         break;
                     case 1: pathwriter.WriteLine("/usr/home/$(whoami)");
                         break;
@@ -261,7 +261,18 @@ namespace WriteC
                     darkModeToggle = !darkModeToggle;
                 }
                 #endregion Darkmode
-                #region Write Line
+                #region Change Key
+                else if (line.ToLower().IndexOf("/changekey") == 0)
+                {
+                    bool successfullyParsed = int.TryParse(line.Remove(0, line.IndexOf(" ")), out key);
+                    if (successfullyParsed) {
+                        line = "\n" + name + " changed their key to " + key + "\nTo change your key please type /changekey " + key;
+                        char[] currentChar = new char[line.Length];
+                        File.AppendAllText(filePath.chat, Encoding(line, key));
+                    }
+                }
+                #endregion Change Key
+                    #region Write Line
                 else
                 {
                     line = "\n" + name + ": " + line;
