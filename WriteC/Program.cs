@@ -283,29 +283,14 @@ namespace WriteC
             }
             #endregion Input
         }
-        public static string Encoding(string message, int key)
+        public static string Encode(string message, int key)
         {
-            string newMessage = "";
-            WriteLine(message);
-            for (int i = 0; i < message.Length; i++)
-            {
-                char c = message[i];
-                int code = char.Parse(message.Substring(i, 1));
-                newMessage += ((char)(code + key)).ToString();
-            }
-            return newMessage;
+            return new string(message.Select(c => (char)(c + key)).ToArray());
         }
 
-        public static string Decoding(string message, int key)
+        public static string Decode(string message, int key)
         {
-            string newMessage = "";
-            for (int i = 0; i < message.Length; i++)
-            {
-                char c = message[i];
-                int code = char.Parse(message.Substring(i, 1));
-                newMessage += ((char)(code - key)).ToString();
-            }
-            return newMessage;
+            return new string(message.Select(c => (char)(c - key)).ToArray());
         }
         public static (string, subPaths) Directory(string directory, int serverOS)
         {
